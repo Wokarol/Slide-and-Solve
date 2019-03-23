@@ -44,6 +44,7 @@ namespace Wokarol.PuzzleProcessors
                     }
                 }
             }
+            if(!winExisted) throw new System.ArgumentException($"There's no win");
         }
     }
 }

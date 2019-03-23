@@ -30,12 +30,6 @@ namespace Wokarol.PuzzleProcessors
 
         [Test]
         public void _02_String_Parsing_Throws_Exception_When_There_Is_More_Than_One_Win() {
-            var walls = new bool[4, 5] {
-                    {true, true,  true,  true,  true },
-                    {true, false, false, false, true},
-                    {true, false, true,  true,  true},
-                    {true, true,  true,  true,  true}
-                };
 
             Assert.That(
                 () => new SlidingPuzzleMap(
@@ -58,6 +52,20 @@ namespace Wokarol.PuzzleProcessors
                 .With.Message.EqualTo("There's more than one win on (1, 1) and (3, 2)"));
         }
 
+        [Test]
+        public void _03_String_Parsing_Throws_Exception_When_There_Is_No_Win() {
+
+            Assert.That(
+                () => new SlidingPuzzleMap(
+                    "1111;" +
+                    "1001;" +
+                    "1011;" +
+                    "101;" +
+                    "111"),
+                Throws.ArgumentException.
+                With.Message.EqualTo("There's no win"));
+        }
+
 
         // quick regex: 2 1 -> 0 1 -> 2 1 false
         // (-?\d) (-?\d) -> (-?\d) (-?\d) -> (-?\d) (-?\d) (\w+)
@@ -66,7 +74,7 @@ namespace Wokarol.PuzzleProcessors
         [TestCase(new int[] { 1, 1 }, new int[] { 1, 0 }, new int[] { 2, 1 }, false, TestName = "From (1, 1) with (1, 0) dir to (2,1)")]
         [TestCase(new int[] { 2, 1 }, new int[] { -1, 0 }, new int[] { 1, 1 }, false, TestName = "From (2, 1) with (-1, 0) dir to (1,1)")]
         [TestCase(new int[] { 2, 1 }, new int[] { 0, 1 }, new int[] { 2, 1 }, false, TestName = "From (2, 1) with (0, 1) dir to (2,1)")]
-        public void _03_Processor_Move_Correctly_Resolved(int[] start, int[] dir, int[] expected, bool expectedWin) {
+        public void _04_Processor_Move_Correctly_Resolved(int[] start, int[] dir, int[] expected, bool expectedWin) {
             var map = new SlidingPuzzleMap(
                 "1111;" +
                 "1001;" +

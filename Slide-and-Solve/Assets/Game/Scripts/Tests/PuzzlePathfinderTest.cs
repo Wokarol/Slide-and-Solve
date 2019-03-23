@@ -45,10 +45,19 @@ namespace Wokarol.Pathfinder
         [TestCase('A', 'E', true, 3, 3)]
         [TestCase('D', 'B', true, 2, 1, 1)]
         [TestCase('B', 'E', false)]
-        public void _02_Pathfinder_Find_Shortest_Path(char start, char end, bool expectedSuccesfull, params int[] expectedPath) {
+        [TestCase('C', 'C', true)]
+        public void _02_Pathfinder_Finds_Shortest_Path(char start, char end, bool expectedSuccesfull, params int[] expectedPath) {
             var result = _pathfinder.GetPath(start, end);
             Assert.That(result.Path, Is.EqualTo(expectedPath), $"Path from {start} to {end} is incorrect");
             Assert.That(result.Succesfull, Is.EqualTo(expectedSuccesfull), $"Path is not {(expectedSuccesfull ? "Succesfull" : "Unsuccesfull")}");
+        }
+
+        [TestCase('A', 1)]
+        [TestCase('F', 1, 3)]
+        [TestCase('D', 2, 3)]
+        public void _03_Pathfinder_Finds_Shortest_Path_To_Win(char start, params int[] expectedPath) {
+            var result = _pathfinder.GetClosestWinPath(start);
+            Assert.That(result.Path, Is.EqualTo(expectedPath), $"Path from {start} to win is incorrect");
         }
     }
 
@@ -68,6 +77,10 @@ namespace Wokarol.Pathfinder
             if (roads.ContainsKey(move))
                 return roads[move];
             return state;
+        }
+
+        public bool StateIsWinning(char state) {
+            return state == 'E' || state == 'B';
         }
     }
 }

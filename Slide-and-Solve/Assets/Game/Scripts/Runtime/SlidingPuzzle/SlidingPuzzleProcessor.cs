@@ -32,13 +32,8 @@ namespace Wokarol.PuzzleProcessors
             }
         }
 
-        //public struct Result
-        //{
-        //    public readonly SlidingPuzzleState State;
-
-        //    public Result(SlidingPuzzleState state) {
-        //        State = state;
-        //    }
-        //}
+        public bool StateIsWinning(SlidingPuzzleState state) {
+            return state.Type == SlidingPuzzleState.StateType.Win;
+        }
     } 
 }

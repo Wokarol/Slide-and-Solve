@@ -8,6 +8,7 @@ namespace Wokarol.Pathfinder
 {
     public class PuzzlePathfinder<MoveT, StateT>
     {
+        HashSet<Node> _winStates;
         List<Node> _graph;
         Dictionary<StateT, Node> _statesToGraphMap;
 
@@ -17,6 +18,7 @@ namespace Wokarol.Pathfinder
         public PuzzlePathfinder<MoveT, StateT> RecalculateGrah(IPuzzleProcessor<MoveT, StateT> processor, StateT initialState, MoveT[] possibleMoves) {
             _statesToGraphMap = new Dictionary<StateT, Node>();
             _graph = new List<Node>();
+            _winStates = new HashSet<Node>();
             GenerateNodes(processor, initialState, possibleMoves, out List<List<StateT>> neighbourMap, out List<List<MoveT>> neighbourMovesMap);
             FindNodeNeighbours(neighbourMap, neighbourMovesMap);
             return this;
@@ -43,6 +45,8 @@ namespace Wokarol.Pathfinder
             while (statesToCheck.Count > 0) {
                 var state = statesToCheck.Dequeue();
                 var node = new Node(state);
+                if (processor.StateIsWinning(state))
+                    _winStates.Add(node);
                 _graph.Add(node);
                 _statesToGraphMap.Add(state, node);
                 closedSet.Add(state);
@@ -89,9 +93,125 @@ namespace Wokarol.Pathfinder
             }
         }
 
+        public Result GetClosestWinPath(StateT startingState) {
+            if (!_statesToGraphMap.ContainsKey(startingState)) throw new ArgumentException($"startingState: {startingState} does not exist on graph\n{GetGraphText()}");
+
+            return InteralFindPath(_statesToGraphMap[startingState], _winStates);
+        }
+
         public Result GetPath(StateT startingState, StateT endingState) {
+            if (!_statesToGraphMap.ContainsKey(startingState)) throw new ArgumentException($"startingState: {startingState} does not exist on graph\n{GetGraphText()}");
+            if (!_statesToGraphMap.ContainsKey(endingState)) throw new ArgumentException($"endingState: {endingState} does not exist on graph\n{GetGraphText()}");
+
+            return InteralFindPath(_statesToGraphMap[startingState], new HashSet<Node> {_statesToGraphMap[endingState]});
+        }
+
+        private Result InteralFindPath(Node startingNode, HashSet<Node> target) {
+            List<Node> nodesToEvaluate = new List<Node>();
+            HashSet<Node> closedSet = new HashSet<Node>();
+
+            // Creating and filling dictionary of pathfinding data
+            Dictionary<Node, PathFindingData> pathfindingData = new Dictionary<Node, PathFindingData>();
+            foreach (var node in _graph) {
+                pathfindingData.Add(node, new PathFindingData(null, int.MaxValue));
+            }
+
+            // Adding starting node
+            pathfindingData[startingNode].ShortestPathLenght = 0;
+            nodesToEvaluate.Add(startingNode);
+
+            int safetyCheck = 100;
+            while (nodesToEvaluate.Count > 0) {
+                if (safetyCheck-- < 0) throw new Exception("Infinite Loop");
+
+                var node = GetShortest(nodesToEvaluate, pathfindingData);
+                var myData = pathfindingData[node];
+
+                if (target.Contains(node)) {
+                    //Debug.Log($"Found shortest path equal to {myData.ShortestPathLenght}");
+                    var moves = TracePath(pathfindingData, node);
+                    return new Result(moves, true);
+                }
+
+                nodesToEvaluate.Remove(node);
+                closedSet.Add(node);
+
+                //Debug.Log("=================");
+                //Debug.Log($"Evaluating {node} with shortest distance {myData.ShortestPathLenght}");
+
+                foreach (var neighbour in node.Neighbours) {
+                    if (!nodesToEvaluate.Contains(neighbour.Node) && !closedSet.Contains(neighbour.Node)) {
+                        //Debug.Log($"\tAdded {neighbour.Node} to nodes to evaluate");
+                        nodesToEvaluate.Add(neighbour.Node);
+                    }
+
+                    var neighbourData = pathfindingData[neighbour.Node];
+                    if (neighbourData.ShortestPathLenght > myData.ShortestPathLenght + 1) {
+                        //Debug.Log($"\t\tMy path to this neighbour ({myData.ShortestPathLenght + 1}) is better than the old one {neighbourData.ShortestPathLenght}");
+                        neighbourData.ShortestPathLenght = myData.ShortestPathLenght + 1;
+                        neighbourData.Parent = node;
+                    }
+                }
+            }
 
             return new Result(new MoveT[0], false);
+        }
+
+        private string GetGraphText() {
+            List<string> lines = new List<string>();
+            foreach (var item in _graph) {
+                List<string> neighbours = new List<string>();
+                foreach (var n in item.Neighbours) {
+                    neighbours.Add($"{n.Node.State}");
+                }
+                lines.Add($"{item.State} -> {string.Join(", ", neighbours)}");
+            }
+            return string.Join("\n", lines);
+        }
+
+        private MoveT[] TracePath(Dictionary<Node, PathFindingData> pathfindingData, Node endNode) {
+            Node currentNode = endNode;
+            PathFindingData currentData = pathfindingData[currentNode];
+
+            List<Node> path = new List<Node>();
+
+            int safetyCheck = 100;
+            while (currentData.Parent != null) {
+                if (safetyCheck-- < 0) throw new Exception("Infinite Loop");
+
+                path.Add(currentNode);
+
+                currentNode = currentData.Parent;
+                currentData = pathfindingData[currentNode];
+            }
+            path.Add(currentNode);
+            path.Reverse();
+
+            List<MoveT> moves = new List<MoveT>();
+
+            for (int i = 0; i < path.Count - 1; i++) {
+                moves.Add(path[i].GetNeighbour(path[i + 1]).Move);
+            }
+
+            List<string> nodeNames = new List<string>();
+            foreach (var p in moves) {
+                nodeNames.Add(p.ToString());
+            }
+
+            //Debug.Log($"{path.Count} nodes in path [{string.Join(" -> ", nodeNames)}]");
+            return moves.ToArray();
+        }
+
+        Node GetShortest(List<Node> nodes, Dictionary<Node, PathFindingData> pathfindingData) {
+            int shortest = int.MaxValue;
+            Node shortestNode = null;
+            for (int i = 0; i < nodes.Count; i++) {
+                if (pathfindingData[nodes[i]].ShortestPathLenght < shortest) {
+                    shortest = pathfindingData[nodes[i]].ShortestPathLenght;
+                    shortestNode = nodes[i];
+                }
+            }
+            return shortestNode;
         }
 
         public class Result
@@ -110,6 +230,8 @@ namespace Wokarol.Pathfinder
         /// </summary>
         public class Node
         {
+            Dictionary<Node, Neighbour> _neighbourMap;
+
             public readonly StateT State;
             public Neighbour[] Neighbours { get; private set; }
 
@@ -119,7 +241,23 @@ namespace Wokarol.Pathfinder
 
             public Node AssignNeighbours(Neighbour[] neighbours) {
                 Neighbours = neighbours;
+
+                _neighbourMap = new Dictionary<Node, Neighbour>();
+                foreach (var neighbour in neighbours) {
+                    _neighbourMap.Add(neighbour.Node, neighbour);
+                }
+
                 return this;
+            }
+
+            public Neighbour GetNeighbour(Node node) {
+                if (_neighbourMap.ContainsKey(node))
+                    return _neighbourMap[node];
+                throw new ArgumentException("Node does not contain given neighbour");
+            }
+
+            public override string ToString() {
+                return $"{State} [{Neighbours.Length} Neighbours]";
             }
 
             /// <summary>
@@ -135,6 +273,17 @@ namespace Wokarol.Pathfinder
                     Move = move;
                 }
             }
+        }
+
+        private class PathFindingData
+        {
+            public PathFindingData(Node parent, int shortestPathLenght) {
+                Parent = parent;
+                ShortestPathLenght = shortestPathLenght;
+            }
+
+            public Node Parent { get; set; }
+            public int ShortestPathLenght { get; set; }
         }
     }
 }
