@@ -17,38 +17,41 @@ namespace Wokarol.PuzzleProcessors
 
             Vector2Int playerPos = state.PlayerCoords;
 
-            Debug.Log($"size = ({_map.Walls.GetLength(0)}, {_map.Walls.GetLength(1)})");
+            //Debug.Log($"size = ({_map.Walls.GetLength(0)}, {_map.Walls.GetLength(1)})");
 
             while (CanGoInDirection()) {
-                Debug.Log("Incremented");
+                //Debug.Log("Incremented");
                 playerPos += dir;
             }
+
+            if(playerPos == _map.WinCoords)
+                return new Result(new SlidingPuzzleState(playerPos, SlidingPuzzleState.StateType.Win));
 
             return new Result(new SlidingPuzzleState(playerPos));
 
             bool CanGoInDirection() {
                 Vector2Int nextPos = playerPos + dir;
-                Debug.Log(
-                    $"Next position is {nextPos}\n" +
-                    $"{ToText(_map.Walls)}\n" + 
-                    $"{nextPos.x >= 0} && {nextPos.x < _map.Walls.GetLength(0)} && {nextPos.y >= 0} && {nextPos.y < _map.Walls.GetLength(1)} && {!_map.Walls[nextPos.x, nextPos.y]}");
+                //Debug.Log(
+                //    $"Next position is {nextPos}\n" +
+                //    $"{ToText(_map.Walls)}\n" + 
+                //    $"{nextPos.x >= 0} && {nextPos.x < _map.Walls.GetLength(0)} && {nextPos.y >= 0} && {nextPos.y < _map.Walls.GetLength(1)} && {!_map.Walls[nextPos.x, nextPos.y]}");
 
                 return 
                     nextPos.x >= 0 && nextPos.x < _map.Walls.GetLength(0) &&
                     nextPos.y >= 0 && nextPos.y < _map.Walls.GetLength(1) &&
                     !_map.Walls[nextPos.x, nextPos.y];
 
-                string ToText(bool[,] map) {
-                    string result = "";
-                    for (int x = 0; x < map.GetLength(0); x++) {
-                        result += $"x - {x} -> [";
-                        for (int y = 0; y < map.GetLength(1); y++) {
-                            result += map[x, y] ? "1" : "0";
-                        }
-                        result += "]\n";
-                    }
-                    return result;
-                }
+                //string ToText(bool[,] map) {
+                //    string result = "";
+                //    for (int y = 0; y < map.GetLength(1); y++) {
+                //        result += $"y - {y} -> [";
+                //        for (int x = 0; x < map.GetLength(0); x++) {
+                //            result += map[x, y] ? "1" : "0";
+                //        }
+                //        result += "]\n";
+                //    }
+                //    return result;
+                //}
             }
         }
 
