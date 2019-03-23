@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Wokarol.PuzzleProcessors.SlidingPuzzleProcessor;
 
 namespace Wokarol.PuzzleProcessors
 {
@@ -91,6 +92,25 @@ namespace Wokarol.PuzzleProcessors
                 Assert.That(result.Type, Is.EqualTo(SlidingPuzzleState.StateType.Win), "Move is not registered as winning");
             else
                 Assert.That(result.Type, Is.EqualTo(SlidingPuzzleState.StateType.Idle), "Move is registered as winning");
+        }
+
+        [Test]
+        public void _05_Processor_Calculates_Transitions_Correclty() {
+            var map = new SlidingPuzzleMap(
+                "1111;" +
+                "10W1;" +
+                "101;" +
+                "101;" +
+                "111;");
+            var processor = new SlidingPuzzleProcessor(map);
+            var initState = new SlidingPuzzleState(new Vector2Int(1, 1));
+
+            var result = processor.ProcessWithTransitions(initState, new Vector2Int(0, 1));
+
+            Assert.That(result.transitions.Length, Is.EqualTo(1), $"Transitions Size Incorrect");
+            Assert.That(result.transitions[0],
+                Is.EqualTo(new Transition(initState.PlayerCoords, new Vector2Int(1, 3))),
+                $"Transition list is incorrect");
         }
 
         string ArrayToText(bool[,] map) {

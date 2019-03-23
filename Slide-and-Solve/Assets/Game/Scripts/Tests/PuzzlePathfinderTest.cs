@@ -61,6 +61,9 @@ namespace Wokarol.Pathfinder
         }
     }
 
+    /// <summary>
+    /// Puzzle Processor based on this graph: https://imgur.com/SAQh0Qj
+    /// </summary>
     internal class FakePuzzleProcessor : IPuzzleProcessor<int, char>
     {
         Dictionary<char, Dictionary<int, char>> map = new Dictionary<char, Dictionary<int, char>> {
