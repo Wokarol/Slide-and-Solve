@@ -78,11 +78,11 @@ namespace Wokarol.PuzzleProcessors
 
             var result = processor.Process(initState, new Vector2Int(dir[0], dir[1]));
 
-            Assert.That(result.State.PlayerCoords, Is.EqualTo(new Vector2Int(expected[0], expected[1])), "Player is in incorrect position");
+            Assert.That(result.PlayerCoords, Is.EqualTo(new Vector2Int(expected[0], expected[1])), "Player is in incorrect position");
             if (expectedWin)
-                Assert.That(result.State.Type, Is.EqualTo(SlidingPuzzleState.StateType.Win), "Move is not registered as winning");
+                Assert.That(result.Type, Is.EqualTo(SlidingPuzzleState.StateType.Win), "Move is not registered as winning");
             else
-                Assert.That(result.State.Type, Is.EqualTo(SlidingPuzzleState.StateType.Idle), "Move is registered as winning");
+                Assert.That(result.Type, Is.EqualTo(SlidingPuzzleState.StateType.Idle), "Move is registered as winning");
         }
 
         string ArrayToText(bool[,] map) {
