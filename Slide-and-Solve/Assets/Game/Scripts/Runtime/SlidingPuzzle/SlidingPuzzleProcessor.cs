@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Wokarol.PuzzleProcessors
 {
-    public class SlidingPuzzleProcessor
+    /// <summary>
+    /// Processes puzzle
+    /// </summary>
+    public class SlidingPuzzleProcessor : IPuzzleProcessor<Vector2Int, SlidingPuzzleState>
     {
         SlidingPuzzleMap _map;
 
@@ -13,55 +13,32 @@ namespace Wokarol.PuzzleProcessors
             _map = map;
         }
 
-        public Result Process(SlidingPuzzleState state, Vector2Int dir) {
-
+        public SlidingPuzzleState Process(SlidingPuzzleState state, Vector2Int dir) {
             Vector2Int playerPos = state.PlayerCoords;
-
-            //Debug.Log($"size = ({_map.Walls.GetLength(0)}, {_map.Walls.GetLength(1)})");
-
             while (CanGoInDirection()) {
-                //Debug.Log("Incremented");
                 playerPos += dir;
             }
 
             if(playerPos == _map.WinCoords)
-                return new Result(new SlidingPuzzleState(playerPos, SlidingPuzzleState.StateType.Win));
-
-            return new Result(new SlidingPuzzleState(playerPos));
+                return new SlidingPuzzleState(playerPos, SlidingPuzzleState.StateType.Win);
+            return new SlidingPuzzleState(playerPos);
 
             bool CanGoInDirection() {
                 Vector2Int nextPos = playerPos + dir;
-                //Debug.Log(
-                //    $"Next position is {nextPos}\n" +
-                //    $"{ToText(_map.Walls)}\n" + 
-                //    $"{nextPos.x >= 0} && {nextPos.x < _map.Walls.GetLength(0)} && {nextPos.y >= 0} && {nextPos.y < _map.Walls.GetLength(1)} && {!_map.Walls[nextPos.x, nextPos.y]}");
-
                 return 
                     nextPos.x >= 0 && nextPos.x < _map.Walls.GetLength(0) &&
                     nextPos.y >= 0 && nextPos.y < _map.Walls.GetLength(1) &&
                     !_map.Walls[nextPos.x, nextPos.y];
-
-                //string ToText(bool[,] map) {
-                //    string result = "";
-                //    for (int y = 0; y < map.GetLength(1); y++) {
-                //        result += $"y - {y} -> [";
-                //        for (int x = 0; x < map.GetLength(0); x++) {
-                //            result += map[x, y] ? "1" : "0";
-                //        }
-                //        result += "]\n";
-                //    }
-                //    return result;
-                //}
             }
         }
 
-        public struct Result
-        {
-            public readonly SlidingPuzzleState State;
+        //public struct Result
+        //{
+        //    public readonly SlidingPuzzleState State;
 
-            public Result(SlidingPuzzleState state) {
-                State = state;
-            }
-        }
+        //    public Result(SlidingPuzzleState state) {
+        //        State = state;
+        //    }
+        //}
     } 
 }

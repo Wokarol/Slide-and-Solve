@@ -82,7 +82,7 @@ namespace Wokarol.PuzzleProcessors
             if (expectedWin)
                 Assert.That(result.State.Type, Is.EqualTo(SlidingPuzzleState.StateType.Win), "Move is not registered as winning");
             else
-                Assert.That(result.State.Type, Is.EqualTo(SlidingPuzzleState.StateType.None), "Move is registered as winning");
+                Assert.That(result.State.Type, Is.EqualTo(SlidingPuzzleState.StateType.Idle), "Move is registered as winning");
         }
 
         string ArrayToText(bool[,] map) {

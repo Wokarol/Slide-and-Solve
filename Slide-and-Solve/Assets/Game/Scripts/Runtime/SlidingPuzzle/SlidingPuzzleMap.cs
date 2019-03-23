@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Wokarol.PuzzleProcessors
 {
+    /// <summary>
+    /// Stores all static info about puzzle map
+    /// </summary>
     public class SlidingPuzzleMap
     {
         public readonly bool[,] Walls;
@@ -42,7 +44,6 @@ namespace Wokarol.PuzzleProcessors
                     }
                 }
             }
-            //Debug.Log($"({rows.Length}, {maxColsCount})");
         }
     }
 }

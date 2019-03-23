@@ -3,14 +3,17 @@ using UnityEngine;
 
 namespace Wokarol.PuzzleProcessors
 {
+    /// <summary>
+    /// Stores info about state of a puzzle including any moving or changing part
+    /// </summary>
     public struct SlidingPuzzleState
     {
-        public enum StateType {None, Win}
+        public enum StateType {Idle, Win}
 
         public readonly Vector2Int PlayerCoords;
         public readonly StateType Type;
 
-        public SlidingPuzzleState(Vector2Int playerCoords, StateType type = StateType.None) {
+        public SlidingPuzzleState(Vector2Int playerCoords, StateType type = StateType.Idle) {
             PlayerCoords = playerCoords;
             Type = type;
         }
