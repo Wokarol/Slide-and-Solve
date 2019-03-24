@@ -28,12 +28,19 @@ namespace Wokarol.IntegartionTests
             var processor = new SlidingPuzzleProcessor(map);
             var pathfinder = new Pathfinder.PuzzlePathfinder<Vector2Int, SlidingPuzzleState>().RecalculateGrah(processor, startingState, new Vector2Int[] { _up, _down, _left, _right });
 
+
+
             Assert.That(pathfinder.Graph.Count, Is.EqualTo(10), $"Incorect graph size");
             Assert.That(pathfinder.StatesToGraphMap.Count, Is.EqualTo(10), $"Incorect graph map size");
 
             Assert.That(pathfinder.StatesToGraphMap, Contains.Key(startingState));
 
-            var path = pathfinder.GetPath(startingState, new SlidingPuzzleState(new Vector2Int(2, 5), SlidingPuzzleState.StateType.Win));
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            var path = pathfinder.GetClosestWinPath(startingState);
+            stopwatch.Stop();
+
+            Debug.Log($"Pathfinding had taken: {stopwatch.ElapsedMilliseconds} ms [{stopwatch.ElapsedTicks} ticks]");
 
             Assert.That(path.Succesfull, Is.EqualTo(true), $"Path is not marked as succesful");
             Assert.That(path.Path, Is.EqualTo(new Vector2Int[] {_up, _right, _up, _left, _down}), $"Path is incorrect");
@@ -56,7 +63,13 @@ namespace Wokarol.IntegartionTests
 
             var processor = new SlidingPuzzleProcessor(map);
             var pathfinder = new Pathfinder.PuzzlePathfinder<Vector2Int, SlidingPuzzleState>().RecalculateGrah(processor, startingState, new Vector2Int[] { _up, _down, _left, _right });
-            var path = pathfinder.GetPath(startingState, new SlidingPuzzleState(new Vector2Int(2, 8), SlidingPuzzleState.StateType.Win));
+
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            var path = pathfinder.GetClosestWinPath(startingState);
+            stopwatch.Stop();
+
+            Debug.Log($"Pathfinding had taken: {stopwatch.ElapsedMilliseconds} ms [{stopwatch.ElapsedTicks} ticks]");
 
             Assert.That(path.Succesfull, Is.EqualTo(true), $"Path is not marked as succesful");
             Assert.That(path.Path, Is.EqualTo(new Vector2Int[] { _right, _up, _left, _down}), $"Path is incorrect");
