@@ -14,6 +14,11 @@ namespace Wokarol.PuzzleProcessors
             _map = map;
         }
 
+        public SlidingPuzzleProcessor Reconstruct(SlidingPuzzleMap map) {
+            _map = map;
+            return this;
+        }
+
         public SlidingPuzzleState Process(SlidingPuzzleState state, Vector2Int dir) {
             return ProcessWithTransitions(state, dir).State;
         }
@@ -35,6 +40,9 @@ namespace Wokarol.PuzzleProcessors
             else
                 resultState = new SlidingPuzzleState(playerPos);
 
+            return new Result(resultState, new Transition[] { new Transition(state.PlayerCoords, playerPos) });
+
+
             bool CanGoInDirection() {
                 Vector2Int nextPos = playerPos + dir;
                 return
@@ -42,18 +50,16 @@ namespace Wokarol.PuzzleProcessors
                     nextPos.y >= 0 && nextPos.y < _map.Walls.GetLength(1) &&
                     !_map.Walls[nextPos.x, nextPos.y];
             }
-
-            return new Result(resultState, new Transition[] { new Transition(state.PlayerCoords, playerPos) });
         }
 
         public struct Result
         {
             public readonly SlidingPuzzleState State;
-            public readonly Transition[] transitions;
+            public readonly Transition[] Transitions;
 
             public Result(SlidingPuzzleState state, Transition[] transitions) {
                 State = state;
-                this.transitions = transitions;
+                Transitions = transitions;
             }
         }
 

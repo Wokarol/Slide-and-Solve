@@ -34,11 +34,13 @@ namespace Wokarol.PuzzleProcessors
             bool winExisted = false;
 
             for (int y = 0; y < rows.Length; y++) {
-                for (int x = 0; x < rows[y].Length; x++) {
-                    var col = rows[y].ToCharArray();
+                int rowY = rows.Length - y - 1;
+                for (int x = 0; x < rows[rowY].Length; x++) {
+                    var col = rows[rowY].ToCharArray();
                     Walls[x, y] = col[x] == '1';
                     if (col[x] == 'W') {
-                        if (winExisted) throw new System.ArgumentException($"There's more than one win on {WinCoords} and ({x}, {y})");
+                        if (winExisted)
+                            throw new System.ArgumentException($"There's more than one win on {WinCoords} and ({x}, {y})");
                         winExisted = true;
                         WinCoords = new Vector2Int(x, y);
                     }

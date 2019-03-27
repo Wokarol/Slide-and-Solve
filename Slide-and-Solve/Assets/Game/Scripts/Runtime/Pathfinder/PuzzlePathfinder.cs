@@ -56,8 +56,8 @@ namespace Wokarol.Pathfinder
                 var neighbourMoves = new List<MoveT>();
                 foreach (var move in possibleMoves) {
                     var newState = processor.Process(state, move);
-                    // State is not the same as original one and therefore is move changes anything
-                    if (!state.Equals(newState)) {
+                    // State is not the same as original one and therefore this move changes state
+                    if (!state.Equals(newState) && !neighbouringStates.Contains(newState)) {
                         // State was not tested and is not in the queue
                         if (!closedSet.Contains(newState) && !statesToCheck.Contains(newState)) {
                             statesToCheck.Enqueue(newState);

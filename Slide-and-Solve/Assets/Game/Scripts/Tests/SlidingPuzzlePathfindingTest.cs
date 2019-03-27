@@ -8,8 +8,8 @@ namespace Wokarol.IntegartionTests
 {
     public class SlidingPuzzlePathfindingTest
     {
-        readonly Vector2Int _down = new Vector2Int(0, 1);
-        readonly Vector2Int _up = new Vector2Int(0, -1);
+        readonly Vector2Int _down = new Vector2Int(0, -1);
+        readonly Vector2Int _up = new Vector2Int(0, 1);
         readonly Vector2Int _right = new Vector2Int(1, 0);
         readonly Vector2Int _left = new Vector2Int(-1, 0);
 
@@ -23,7 +23,7 @@ namespace Wokarol.IntegartionTests
                 "100011;" +
                 "11W111;" +
                 "111111");
-            SlidingPuzzleState startingState = new SlidingPuzzleState(new Vector2Int(1, 4));
+            SlidingPuzzleState startingState = new SlidingPuzzleState(new Vector2Int(1, 2));
 
             var processor = new SlidingPuzzleProcessor(map);
             var pathfinder = new Pathfinder.PuzzlePathfinder<Vector2Int, SlidingPuzzleState>().RecalculateGrah(processor, startingState, new Vector2Int[] { _up, _down, _left, _right });
@@ -59,7 +59,7 @@ namespace Wokarol.IntegartionTests
                 "10000001;" +
                 "11W11111;" +
                 "11111111");
-            SlidingPuzzleState startingState = new SlidingPuzzleState(new Vector2Int(1, 3));
+            SlidingPuzzleState startingState = new SlidingPuzzleState(new Vector2Int(1, 6));
 
             var processor = new SlidingPuzzleProcessor(map);
             var pathfinder = new Pathfinder.PuzzlePathfinder<Vector2Int, SlidingPuzzleState>().RecalculateGrah(processor, startingState, new Vector2Int[] { _up, _down, _left, _right });
